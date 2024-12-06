@@ -1,6 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 
+const userRoutes = require('./routes/userAuthRoute');
+
+app.use('/api/users', userRoutes);
+
 const app = express();
 
 let corsOptions = {
