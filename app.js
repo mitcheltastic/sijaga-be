@@ -1,24 +1,35 @@
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
+require("dotenv").config();
 
-const userRoutes = require('./routes/userAuthRoute');
-
-app.use('/api/users', userRoutes);
+const sijagaRoutes = require("./routes/userAuthRoute"); // Sijaga routes
 
 const app = express();
 
-let corsOptions = {
-  origin: true, // Allows requests from all origins
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+// Middleware
+app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(bodyParser.json()); // Parse JSON requests
+app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded data
 
-app.use(cors(corsOptions));
+// API Routes
+app.use("/user", sijagaRoutes); // Mount Sijaga routes
 
-// Add a GET route for testing
-app.get("/", (req, res) => {
-  res.send("Hello World");
+// 404 Error Handling
+app.use((req, res) => {
+  res.status(404).json({
+    status: false,
+    message: "Resource not found",
+  });
 });
 
-module.exports = app; // Export the app
+// Global Error Handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    status: false,
+    message: "Internal server error",
+  });
+});
+
+module.exports = app;

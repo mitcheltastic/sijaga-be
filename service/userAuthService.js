@@ -1,18 +1,28 @@
-// services/UserService.js
-const UserRepository = require('../repository/userAuthRepository');
-
-class UserService {
-  static async registerUser({ UID, name, email }) {
-    // Check if email is already used
-    const existingUser = await UserRepository.findUserByEmail(email);
-    if (existingUser) {
-      throw new Error('Email is already registered');
+const {
+    createSijaga,
+    getSijagaByUserId,
+    updateSijagaStatus,
+  } = require("../repository/userAuthRepository");
+  
+  const createSijagaService = async (name, status, userId) => {
+    return await createSijaga(name, status, userId);
+  };
+  
+  const getSijagaByUserIdService = async (userId) => {
+    const sijagaRecords = await getSijagaByUserId(userId);
+    if (sijagaRecords.length === 0) {
+      throw new Error("No Sijaga records found for this user.");
     }
-
-    // Create the user
-    const user = await UserRepository.createUser({ UID, name, email });
-    return user;
-  }
-}
-
-module.exports = UserService;
+    return sijagaRecords;
+  };
+  
+  const updateSijagaStatusService = async (id, status) => {
+    return await updateSijagaStatus(id, status);
+  };
+  
+  module.exports = {
+    createSijagaService,
+    getSijagaByUserIdService,
+    updateSijagaStatusService,
+  };
+  
