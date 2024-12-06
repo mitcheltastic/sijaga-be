@@ -8,10 +8,13 @@ datasource db {
 }
 
 model User {
-  UID     Int     @id @default(autoincrement())
-  name    String
-  email   String  @unique
-  sijaga  Sijaga[]
+  UID      Int      @id @default(autoincrement())
+  name     String
+  email    String   
+  card_id  String   @unique
+  sijaga   Sijaga?  
+
+  @@map("users")
 }
 
 model Sijaga {
@@ -19,6 +22,8 @@ model Sijaga {
   Timestamp DateTime @default(now())
   name      String
   status    Boolean
-  user_id   Int
-  user      User     @relation(fields: [user_id], references: [UID])
+  card_id   String   @unique
+  user      User     @relation(fields: [card_id], references: [card_id]) // Defined @relation only here
+
+  @@map("sijagas")
 }

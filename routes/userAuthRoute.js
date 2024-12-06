@@ -1,18 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const {
-  createSijagaController,
-  getSijagaByUserIdController,
-  updateSijagaStatusController,
-} = require("../controller/userAuthController");
+const { createSijagaController } = require("../controller/userAuthController");
 
-// Create a new Sijaga record
-router.post("/sijaga", createSijagaController);
-
-// Get all Sijaga records for a specific user
-router.get("/sijaga/:userId", getSijagaByUserIdController);
-
-// Update the status of a Sijaga record
-router.patch("/sijaga/:id", updateSijagaStatusController);
+// Route to create a new user and Sijaga record
+router.post("/create-sijaga", createSijagaController);
 
 module.exports = router;
