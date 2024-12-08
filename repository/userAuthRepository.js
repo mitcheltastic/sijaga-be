@@ -1,14 +1,26 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+// Function to check if a cardId exists in card_id_dumps
+const checkCardIdExists = async (cardId) => {
+  try {
+    const cardIdDump = await prisma.cardIdDumps.findUnique({
+      where: { card_id: cardId },
+    });
+    return cardIdDump !== null; // Returns true if exists, false otherwise
+  } catch (error) {
+    throw new Error("Error checking Card ID existence: " + error.message);
+  }
+};
+
 // Function to create a user
 const createUser = async (name, email, cardId) => {
   try {
     const user = await prisma.user.create({
       data: {
-        name: name,
-        email: email,
-        card_id: cardId,  // Ensure the card_id is provided
+        name,
+        email,
+        card_id: cardId,
       },
     });
     return user;
@@ -17,25 +29,16 @@ const createUser = async (name, email, cardId) => {
   }
 };
 
-// Function to create a Sijaga record after creating a user
-const createSijagaForUser = async (name, email, status, cardId) => {
+// Function to delete a user by ID
+const deleteUser = async (userId) => {
   try {
-    // Create the user
-    const user = await createUser(name, email, cardId);
-
-    // Create the Sijaga record linked to this user
-    const sijaga = await prisma.sijaga.create({
-      data: {
-        name: name,
-        status: status,
-        card_id: cardId,  // Link Sijaga with the user's card_id
-      },
+    const deletedUser = await prisma.user.delete({
+      where: { id: userId },
     });
-
-    return sijaga;
+    return deletedUser;
   } catch (error) {
-    throw new Error("Error creating Sijaga record: " + error.message);
+    throw new Error("Error deleting user: " + error.message);
   }
 };
 
-module.exports = { createSijagaForUser };
+module.exports = { checkCardIdExists, createUser, deleteUser };

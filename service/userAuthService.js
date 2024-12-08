@@ -1,13 +1,28 @@
-const { createSijagaForUser } = require("../repository/userAuthRepository");
+const { checkCardIdExists, createUser, deleteUser } = require("../repository/userAuthRepository");
 
-// Service function to create user and Sijaga
-const createSijagaService = async (name, email, status, cardId) => {
-  try {
-    const sijaga = await createSijagaForUser(name, email, status, cardId);
-    return sijaga;
-  } catch (error) {
-    throw new Error("Error in service: " + error.message);
+// Service to create a user
+const createUserService = async (name, email, cardId) => {
+  if (!name || !email || !cardId) {
+    throw new Error("Name, email, and card ID are required.");
   }
+
+  // Check if the cardId exists in card_id_dumps
+  const cardIdExists = await checkCardIdExists(cardId);
+  if (!cardIdExists) {
+    throw new Error("Card ID does not exist in the database.");
+  }
+
+  // Proceed to create the user
+  return await createUser(name, email, cardId);
 };
 
-module.exports = { createSijagaService };
+// Service to delete a user by ID
+const deleteUserService = async (userId) => {
+  if (!userId) {
+    throw new Error("User ID is required.");
+  }
+
+  return await deleteUser(userId);
+};
+
+module.exports = { createUserService, deleteUserService };
