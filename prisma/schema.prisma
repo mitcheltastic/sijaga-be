@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id      Int    @id @default(autoincrement())
-  name    String
-  email   String   
-  card_id String  @unique
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  card_id  String @unique
+  password String  // Store the hashed password
 
-  @@map("users")
+  @@map("users")  // The table name in the DB will be "users"
 }
 
 model UsageHistory {
@@ -23,19 +24,20 @@ model UsageHistory {
   status    String
   card_id   String   @unique
 
-  @@map("usage_history")
+  @@map("usage_history")  // The table name in the DB will be "usage_history"
 }
 
 model CardIdDumps {
   id      Int    @id @default(autoincrement())
   card_id String @unique
 
-  @@map("card_id_dumps")
+  @@map("card_id_dumps")  // The table name in the DB will be "card_id_dumps"
 }
 
 model LockedStatus {
-  id     Int     @id @default(autoincrement())
+  id     Int    @id @default(autoincrement())
   status String
+  token  String // Add the token field here
 
   @@map("locked_status")
 }

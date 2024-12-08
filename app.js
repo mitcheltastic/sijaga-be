@@ -3,7 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
-const sijagaRoutes = require("./routes/userAuthRoute"); // Sijaga routes
+const userRoutes = require("./routes/userAuthRoute"); // Sijaga routes
 const sendIdCardRoutes = require("./routes/sendCardIdRoute");
 
 const app = express();
@@ -14,7 +14,7 @@ app.use(bodyParser.json()); // Parse JSON requests
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded data
 
 // API Routes
-app.use("/user", sijagaRoutes); // Mount Sijaga routes
+app.use("/user", userRoutes); // Mount Sijaga routes
 app.use("/card-id",sendIdCardRoutes);
 // 404 Error Handling
 app.use((req, res) => {

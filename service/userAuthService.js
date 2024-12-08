@@ -1,28 +1,57 @@
-const { checkCardIdExists, createUser, deleteUser } = require("../repository/userAuthRepository");
+const { registerUser, getUserByEmail, isCardIdInDumps, blacklistToken } = require("../repository/userAuthRepository");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-// Service to create a user
-const createUserService = async (name, email, cardId) => {
-  if (!name || !email || !cardId) {
-    throw new Error("Name, email, and card ID are required.");
-  }
-
+// Register user
+const registerUserService = async (name, email, cardId, password) => {
   // Check if the cardId exists in card_id_dumps
-  const cardIdExists = await checkCardIdExists(cardId);
-  if (!cardIdExists) {
-    throw new Error("Card ID does not exist in the database.");
+  const isCardInDumps = await isCardIdInDumps(cardId);
+  if (isCardInDumps) {
+    throw new Error("Card ID is already in the dumps.");
   }
 
-  // Proceed to create the user
-  return await createUser(name, email, cardId);
+  const user = await registerUser(name, email, cardId, password);
+  return user;
 };
 
-// Service to delete a user by ID
-const deleteUserService = async (userId) => {
-  if (!userId) {
-    throw new Error("User ID is required.");
+// Login user
+const loginUserService = async (email, password) => {
+  const user = await getUserByEmail(email);
+  if (!user) {
+    throw new Error("User not found.");
   }
 
-  return await deleteUser(userId);
+  // Compare the entered password with the stored hashed password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new Error("Invalid password.");
+  }
+
+  // Create JWT token
+  const payload = { id: user.id, name: user.name, email: user.email, card_id: user.card_id };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+  return { message: "Login successful", token };
 };
 
-module.exports = { createUserService, deleteUserService };
+// Logout user
+const logoutUserService = async (token) => {
+  console.log("Attempting to log out with token:", token);  // Log the token being passed
+
+  try {
+    const result = await blacklistToken(token);  // Call blacklistToken to handle the process
+    console.log("Token blacklisted successfully:", result);  // Log successful result
+
+    return {
+      success: true,
+      message: "Logout successful.",
+    };
+  } catch (error) {
+    console.error("Error during logout:", error.message);  // Log the actual error message
+    throw new Error("Error during logout process.");
+  }
+};
+
+
+
+module.exports = { registerUserService, loginUserService, logoutUserService };

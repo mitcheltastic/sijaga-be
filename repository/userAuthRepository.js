@@ -1,44 +1,74 @@
+const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// Function to check if a cardId exists in card_id_dumps
-const checkCardIdExists = async (cardId) => {
-  try {
-    const cardIdDump = await prisma.cardIdDumps.findUnique({
-      where: { card_id: cardId },
-    });
-    return cardIdDump !== null; // Returns true if exists, false otherwise
-  } catch (error) {
-    throw new Error("Error checking Card ID existence: " + error.message);
-  }
+// Register user with hashed password
+const registerUser = async (name, email, cardId, password) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const result = await prisma.user.create({
+    data: {
+      name,
+      email,
+      card_id: cardId,
+      password: hashedPassword,  // Store the hashed password
+    },
+  });
+
+  return result;
 };
 
-// Function to create a user
-const createUser = async (name, email, cardId) => {
+// Get user by email for login
+const getUserByEmail = async (email) => {
   try {
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        card_id: cardId,
-      },
+    const user = await prisma.user.findUnique({
+      where: { email: email },
     });
+    console.log("User found by email:", user); // Debugging line
     return user;
   } catch (error) {
-    throw new Error("Error creating user: " + error.message);
+    console.log("Error finding user by email:", error); // Debugging line
+    return null;
   }
 };
 
-// Function to delete a user by ID
-const deleteUser = async (userId) => {
+// Check if the cardId exists in card_id_dumps
+const isCardIdInDumps = async (cardId) => {
   try {
-    const deletedUser = await prisma.user.delete({
-      where: { id: userId },
+    const card = await prisma.card_id_dumps.findUnique({
+      where: { card_id: cardId },
     });
-    return deletedUser;
+    console.log("Card found in dumps:", card); // Debugging line
+    return card !== null;
   } catch (error) {
-    throw new Error("Error deleting user: " + error.message);
+    console.log("Error finding card in dumps:", error); // Debugging line
+    return false;
   }
 };
 
-module.exports = { checkCardIdExists, createUser, deleteUser };
+// Blacklist the token when logging out
+const blacklistToken = async (token) => {
+  try {
+    console.log("Blacklisting token:", token);  // Log the token to ensure it's correct
+
+    const result = await prisma.lockedStatus.create({
+      data: {
+        status: "locked",
+        token: token,  // Ensure token is being passed properly
+      },
+    });
+
+    console.log("Token blacklisted successfully:", result);  // Log the result
+    return result;
+  } catch (error) {
+    console.error("Error blacklisting token:", error);  // Log the error
+    throw new Error("Error blacklisting token");
+  }
+};
+
+module.exports = {
+  registerUser,
+  getUserByEmail,
+  isCardIdInDumps,
+  blacklistToken,
+};
