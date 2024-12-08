@@ -8,22 +8,34 @@ datasource db {
 }
 
 model User {
-  UID      Int      @id @default(autoincrement())
-  name     String
-  email    String   
-  card_id  String   @unique
-  sijaga   Sijaga?  
+  id      Int    @id @default(autoincrement())
+  name    String
+  email   String   
+  card_id String  @unique
 
   @@map("users")
 }
 
-model Sijaga {
+model UsageHistory {
   id        Int      @id @default(autoincrement())
   Timestamp DateTime @default(now())
   name      String
-  status    Boolean
+  status    String
   card_id   String   @unique
-  user      User     @relation(fields: [card_id], references: [card_id]) // Defined @relation only here
 
-  @@map("sijagas")
+  @@map("usage_history")
+}
+
+model CardIdDumps {
+  id      Int    @id @default(autoincrement())
+  card_id String @unique
+
+  @@map("card_id_dumps")
+}
+
+model LockedStatus {
+  id     Int     @id @default(autoincrement())
+  status String
+
+  @@map("locked_status")
 }
