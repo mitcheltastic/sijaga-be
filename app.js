@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const userRoutes = require("./routes/userAuthRoute"); // Sijaga routes
 const sendIdCardRoutes = require("./routes/sendCardIdRoute");
-
+const userNeeds = require("./routes/userRoute")
 const app = express();
 
 // Middleware
@@ -14,8 +14,9 @@ app.use(bodyParser.json()); // Parse JSON requests
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded data
 
 // API Routes
-app.use("/user", userRoutes); // Mount Sijaga routes
+app.use("/user", userRoutes);
 app.use("/card-id",sendIdCardRoutes);
+app.use("user-needs",userNeeds);
 // 404 Error Handling
 app.use((req, res) => {
   res.status(404).json({

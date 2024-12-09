@@ -22,7 +22,7 @@ model UsageHistory {
   Timestamp DateTime @default(now())
   name      String
   status    String
-  card_id   String   @unique
+  card_id   String
 
   @@map("usage_history")  // The table name in the DB will be "usage_history"
 }
@@ -34,10 +34,10 @@ model CardIdDumps {
   @@map("card_id_dumps")  // The table name in the DB will be "card_id_dumps"
 }
 
-model LockedStatus {
-  id     Int    @id @default(autoincrement())
-  status String
-  token  String // Add the token field here
+model BlacklistedToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now()) // Tracks when the token was blacklisted
 
-  @@map("locked_status")
+  @@map("blacklisted_tokens") // Table for blacklisted tokens
 }
