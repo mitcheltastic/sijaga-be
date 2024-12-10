@@ -1,40 +1,43 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const userRepository = require("../repository/userRepository");
+const bcrypt = require("bcryptjs");
+const { getUserById, updateUserProfile, changeUserPassword } = require("../repository/userRepository");
 
-const changePassword = async (id, oldPassword, newPassword) => {
-  const user = await userRepository.getUserById(id);
-  if (!user) throw new Error("User not found");
-
-  const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
-  if (!isPasswordMatch) throw new Error("Incorrect old password");
-
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  return await userRepository.updateUserById(id, { password: hashedPassword });
-};
-
-const resetPassword = async (email, password, confirmPassword) => {
-  if (password !== confirmPassword) throw new Error("Passwords do not match");
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  return await userRepository.updateUserByEmail(email, { password: hashedPassword });
-};
-
-const whoamiService = async (id) => {
-  const user = await userRepository.getUserById(id);
-  if (!user) throw new Error("User not found");
-
-  delete user.password;
+// Get user details
+const getUserDetailsService = async (userId) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new Error("User not found.");
+  }
   return user;
 };
 
-const blacklistToken = async (token) => {
-  return await userRepository.blacklistToken(token);
+// Update user profile
+const updateUserProfileService = async (userId, name, email, cardId) => {
+  const updatedUser = await updateUserProfile(userId, name, email, cardId);
+  return updatedUser;
+};
+
+// Change password
+const changePasswordService = async (userId, oldPassword, newPassword) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  // Compare old password with the stored one
+  const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+  if (!isPasswordValid) {
+    throw new Error("Old password is incorrect.");
+  }
+
+  // Hash new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+  const updatedUser = await changeUserPassword(userId, hashedPassword);
+  return updatedUser;
 };
 
 module.exports = {
-  changePassword,
-  resetPassword,
-  whoamiService,
-  blacklistToken,
+  getUserDetailsService,
+  updateUserProfileService,
+  changePasswordService,
 };

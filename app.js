@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded data
 // API Routes
 app.use("/user", userRoutes);
 app.use("/card-id",sendIdCardRoutes);
-app.use("user-ess",userNeeds);
+app.use("/user-ess",userNeeds);
 // 404 Error Handling
 app.use((req, res) => {
   res.status(404).json({

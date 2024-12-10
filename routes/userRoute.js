@@ -1,10 +1,22 @@
 const express = require("express");
-const router = express.Router();
-const userController = require("../controller/userController");
-const authMiddleware = require("../middleware/authMiddleware");
+const { whoamiController, getUserDetailsController, updateUserProfileController, changePasswordController } = require("../controller/userController");
+const { authenticateUser } = require("../middleware/authMiddleware");
 
-router.patch("/change-password", authMiddleware, userController.changePasswordController);
-router.post("/logout", authMiddleware, userController.logoutController);
-router.get("/whoami", authMiddleware, userController.whoamiController);
+const router = express.Router();
+
+// Middleware to authenticate user
+router.use(authenticateUser);
+
+// Route to get current user details (whoami)
+router.get("/whoami", whoamiController);
+
+// Route to get user details by ID (for admin or profile-related)
+router.get("/:id", getUserDetailsController);
+
+// Route to update user profile
+router.put("/profile", updateUserProfileController);
+
+// Route to change user password
+router.put("/password", changePasswordController);
 
 module.exports = router;

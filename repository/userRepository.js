@@ -1,30 +1,37 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const getUserById = async (id) => {
-  return await prisma.user.findUnique({ where: { id } });
+// Get user by ID
+const getUserById = async (userId) => {
+  return await prisma.user.findUnique({
+    where: { id: userId },
+  });
 };
 
-const updateUserById = async (id, data) => {
-  return await prisma.user.update({ where: { id }, data });
+// Update user profile
+const updateUserProfile = async (userId, name, email, cardId) => {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name,
+      email,
+      card_id: cardId,
+    },
+  });
 };
 
-const getUserByEmail = async (email) => {
-  return await prisma.user.findUnique({ where: { email } });
-};
-
-const updateUserByEmail = async (email, data) => {
-  return await prisma.user.update({ where: { email }, data });
-};
-
-const blacklistToken = async (token) => {
-  return await prisma.blacklistedToken.create({ data: { token } });
+// Change user password
+const changeUserPassword = async (userId, newPassword) => {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      password: newPassword, // Store the hashed password
+    },
+  });
 };
 
 module.exports = {
   getUserById,
-  updateUserById,
-  getUserByEmail,
-  updateUserByEmail,
-  blacklistToken,
+  updateUserProfile,
+  changeUserPassword,
 };

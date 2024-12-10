@@ -1,32 +1,33 @@
 const jwt = require("jsonwebtoken");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 
-const accessValidation = async (req, res, next) => {
-  const { authorization } = req.headers;
+const authenticateUser = (req, res, next) => {
+  // Extract token from the Authorization header
+  const token = req.header("Authorization")?.split(" ")[1];
 
-  if (!authorization) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  const token = authorization.split(" ")[1];
-
-  // Check if the token is blacklisted
-  const blacklistedToken = await prisma.blacklistedToken.findUnique({
-    where: { token },
-  });
-
-  if (blacklistedToken) {
-    return res.status(403).json({ message: "Token has been logged out." });
+  // If no token is provided, return an error response
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Authorization token is required.",
+    });
   }
 
   try {
+    // Verify the token using the secret key
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Attach the decoded user data to the request object
     req.user = decoded;
+
+    // Proceed to the next middleware or route handler
     next();
   } catch (error) {
-    return res.status(403).json({ message: "Invalid token." });
+    // If the token is invalid or expired, return an error response
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token.",
+    });
   }
 };
 
-module.exports = accessValidation;
+module.exports = { authenticateUser };
