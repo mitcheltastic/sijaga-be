@@ -1,12 +1,10 @@
 const cron = require("node-cron");
-const { lockedStatusCleanupService } = require("../service/lockedStatusCleanupService");
+const { cleanUpOldLockedStatuses } = require("../service/lockedStatusCleanupService");
 
-// Schedule the job to run every day at midnight
+// Schedule the cleanup job to run once a day (midnight)
 cron.schedule("0 0 * * *", async () => {
   console.log("Running locked status cleanup job...");
-  try {
-    await lockedStatusCleanupService();
-  } catch (error) {
-    console.error("Locked status cleanup job failed:", error.message);
-  }
+  await cleanUpOldLockedStatuses();
+}, {
+  timezone: "Asia/Jakarta" // Use your desired timezone
 });

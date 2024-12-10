@@ -3,6 +3,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
+// Initialize background jobs
+require("./jobs/lockedStatusCleanup");
+
 // Sijaga routes
 const userRoutes = require("./routes/userAuthRoute"); 
 const sendIdCardRoutes = require("./routes/sendCardIdRoute");
@@ -21,9 +24,6 @@ app.use("/user", userRoutes);
 app.use("/card-id",sendIdCardRoutes);
 app.use("/user-ess",userNeeds);
 app.use("/history", usageHistory);
-
-// Initialize background jobs
-require("./jobs/lockedStatusCleanup");
 
 // 404 Error Handling
 app.use((req, res) => {

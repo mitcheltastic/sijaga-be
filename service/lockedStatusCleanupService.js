@@ -1,17 +1,13 @@
-const { deleteOldLockedStatuses } = require("../repository/lockedStatusRepository");
+const { deleteLockedStatusesOlderThanOneDay } = require("../repository/lockedStatusRepository");
 
-// Service to clean up old locked_status records
-const lockedStatusCleanupService = async () => {
+const cleanUpOldLockedStatuses = async () => {
   try {
-    const result = await deleteOldLockedStatuses();
-    console.log(`${result.count} old locked statuses deleted.`);
-    return result;
+    await deleteLockedStatusesOlderThanOneDay();
   } catch (error) {
-    console.error("Error during locked status cleanup:", error.message);
-    throw error;
+    console.error("Error in cleanup service:", error);
   }
 };
 
 module.exports = {
-  lockedStatusCleanupService,
+  cleanUpOldLockedStatuses,
 };
