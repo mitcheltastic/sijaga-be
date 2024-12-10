@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { io } = require("../app"); // Assuming io is initialized in app.js
 
 // Get all users
 const getAllUsers = async () => {
@@ -8,13 +9,12 @@ const getAllUsers = async () => {
 
 // Add a new usage history entry
 const addUsageHistory = async (card_id, status) => {
-  // Fetch the user name based on card_id
   const user = await prisma.user.findUnique({ where: { card_id } });
   if (!user) {
     throw new Error("User with this card_id does not exist.");
   }
 
-  return await prisma.usageHistory.create({
+  const usageHistory = await prisma.usageHistory.create({
     data: {
       Timestamp: new Date(),
       name: user.name,
@@ -22,6 +22,11 @@ const addUsageHistory = async (card_id, status) => {
       card_id: card_id,
     },
   });
+
+  // Emit real-time event for usage history
+  io.emit("usageHistory_update", usageHistory);
+
+  return usageHistory;
 };
 
 // Get all usage history
@@ -55,21 +60,26 @@ const getTop3TimestampsFromUsageHistory = async () => {
 
 // Post status to locked_status table
 const createLockedStatus = async (status) => {
-    return await prisma.lockedStatus.create({
-      data: {
-        status,
-      },
-    });
-  };
-  
-  // Get the latest status from locked_status table
-  const getLatestLockedStatus = async () => {
-    return await prisma.lockedStatus.findFirst({
-      orderBy: {
-        Timestamp: "desc", // Sort by latest Timestamp
-      },
-    });
-  };
+  const newStatus = await prisma.lockedStatus.create({
+    data: {
+      status,
+    },
+  });
+
+  // Emit real-time event for locked status
+  io.emit("lockedStatus_update", newStatus);
+
+  return newStatus;
+};
+
+// Get the latest status from locked_status table
+const getLatestLockedStatus = async () => {
+  return await prisma.lockedStatus.findFirst({
+    orderBy: {
+      Timestamp: "desc",
+    },
+  });
+};
 
 module.exports = {
   getAllUsers,
