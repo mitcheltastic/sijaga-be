@@ -1,5 +1,5 @@
 const express = require("express");
-const { whoamiController, getUserDetailsController, updateUserProfileController, changePasswordController } = require("../controller/userController");
+const { whoamiController, getUserDetailsController, updateUserProfileController, changePasswordController, deleteUserController } = require("../controller/userController");
 const { authenticateUser } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -18,5 +18,7 @@ router.put("/update", updateUserProfileController);
 
 // Route to change user password
 router.put("/changepassword", changePasswordController);
+
+router.delete("/delete", deleteUserController); 
 
 module.exports = router;

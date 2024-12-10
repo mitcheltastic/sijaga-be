@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const { getUserById, updateUserProfile, changeUserPassword } = require("../repository/userRepository");
+const { getUserById, updateUserProfile, changeUserPassword, deleteUser } = require("../repository/userRepository");
 
 // Get user details
 const getUserDetailsService = async (userId) => {
@@ -36,8 +36,14 @@ const changePasswordService = async (userId, oldPassword, newPassword) => {
   return updatedUser;
 };
 
+const deleteUserService = async (userId) => {
+  const result = await deleteUser(userId);
+  return result;
+};
+
 module.exports = {
   getUserDetailsService,
   updateUserProfileService,
   changePasswordService,
+  deleteUserService
 };

@@ -43,8 +43,25 @@ const changeUserPassword = async (userId, newPassword) => {
   });
 };
 
+const deleteUser = async (userId) => {
+  try {
+    // Perform the delete query
+    await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+    return { message: "User deleted successfully." };
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error(`Error deleting user: ${error.message}`);
+  }
+};
+
+
 module.exports = {
   getUserById,
   updateUserProfile,
   changeUserPassword,
+  deleteUser
 };

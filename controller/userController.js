@@ -1,4 +1,4 @@
-const { getUserDetailsService, updateUserProfileService, changePasswordService } = require("../service/userService");
+const { getUserDetailsService, updateUserProfileService, changePasswordService, deleteUserService } = require("../service/userService");
 
 // Get user details (Who am I API)
 const whoamiController = async (req, res) => {
@@ -80,9 +80,28 @@ const changePasswordController = async (req, res) => {
   }
 };
 
+const deleteUserController = async (req, res) => {
+  try {
+    const userId = req.user.id;  // Assuming userId comes from the authenticated user
+    const result = await deleteUserService(userId);
+
+    return res.json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 module.exports = {
   whoamiController,
   getUserDetailsController,
   updateUserProfileController,
   changePasswordController,
+  deleteUserController
 };
