@@ -53,6 +53,24 @@ const getTop3TimestampsFromUsageHistory = async () => {
   });
 };
 
+// Post status to locked_status table
+const createLockedStatus = async (status) => {
+    return await prisma.lockedStatus.create({
+      data: {
+        status,
+      },
+    });
+  };
+  
+  // Get the latest status from locked_status table
+  const getLatestLockedStatus = async () => {
+    return await prisma.lockedStatus.findFirst({
+      orderBy: {
+        Timestamp: "desc", // Sort by latest Timestamp
+      },
+    });
+  };
+
 module.exports = {
   getAllUsers,
   addUsageHistory,
@@ -60,4 +78,6 @@ module.exports = {
   getLatestUsageHistory,
   getTop3NamesFromUsageHistory,
   getTop3TimestampsFromUsageHistory,
+  createLockedStatus,
+  getLatestLockedStatus
 };

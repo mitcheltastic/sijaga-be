@@ -5,6 +5,8 @@ const {
     getLatestUsageHistoryService,
     getTop3NamesService,
     getTop3TimestampsService,
+    createLockedStatusService,
+    getLatestLockedStatusService
   } = require("../service/usageHistoryService");
   
   // Controller to get all users
@@ -67,6 +69,58 @@ const {
       res.status(400).json({ success: false, message: error.message });
     }
   };
+
+  // API to post a status
+const createLockedStatusController = async (req, res) => {
+    try {
+      const { status } = req.body;
+      if (!status) {
+        return res.status(400).json({
+          success: false,
+          message: "Status is required.",
+        });
+      }
+  
+      const newStatus = await createLockedStatusService(status);
+  
+      return res.json({
+        success: true,
+        message: "Status added successfully.",
+        status: newStatus,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+  
+  // API to get the latest status
+  const getLatestLockedStatusController = async (req, res) => {
+    try {
+      const latestStatus = await getLatestLockedStatusService();
+  
+      if (!latestStatus) {
+        return res.status(404).json({
+          success: false,
+          message: "No status found.",
+        });
+      }
+  
+      return res.json({
+        success: true,
+        message: "Latest status retrieved successfully.",
+        status: latestStatus,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+  
   
   module.exports = {
     getAllUsersController,
@@ -75,5 +129,7 @@ const {
     getLatestUsageHistoryController,
     getTop3NamesController,
     getTop3TimestampsController,
+    createLockedStatusController,
+    getLatestLockedStatusController
   };
   

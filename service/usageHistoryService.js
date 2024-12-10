@@ -5,6 +5,8 @@ const {
     getLatestUsageHistory,
     getTop3NamesFromUsageHistory,
     getTop3TimestampsFromUsageHistory,
+    createLockedStatus,
+    getLatestLockedStatus
   } = require("../repository/usageHistoryRepository");
   
   // Service to get all users
@@ -36,6 +38,16 @@ const {
   const getTop3TimestampsService = async () => {
     return await getTop3TimestampsFromUsageHistory();
   };
+
+  // Post a new status
+  const createLockedStatusService = async (status) => {
+    return await createLockedStatus(status);
+  };
+  
+  // Get the latest status
+  const getLatestLockedStatusService = async () => {
+    return await getLatestLockedStatus();
+  };
   
   module.exports = {
     getAllUsersService,
@@ -44,5 +56,7 @@ const {
     getLatestUsageHistoryService,
     getTop3NamesService,
     getTop3TimestampsService,
+    createLockedStatusService,
+    getLatestLockedStatusService,
   };
   

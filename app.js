@@ -22,6 +22,9 @@ app.use("/card-id",sendIdCardRoutes);
 app.use("/user-ess",userNeeds);
 app.use("/history", usageHistory);
 
+// Initialize background jobs
+require("./jobs/lockedStatusCleanup");
+
 // 404 Error Handling
 app.use((req, res) => {
   res.status(404).json({
