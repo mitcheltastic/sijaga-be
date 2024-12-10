@@ -1,74 +1,60 @@
-const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// Register user with hashed password
-const registerUser = async (name, email, cardId, password) => {
-  const hashedPassword = await bcrypt.hash(password, 10);
+// Check if the card_id exists in CardIdDumps
+const isCardIdAvailable = async (cardId) => {
+  if (!cardId) {
+    throw new Error("Card ID is undefined or missing.");
+  }
 
-  const result = await prisma.user.create({
+  const card = await prisma.cardIdDumps.findUnique({
+    where: { card_id: cardId },
+  });
+
+  return !!card; // Returns true if the card exists, false otherwise
+};
+
+// Register a new user
+const registerUser = async (name, email, cardId, hashedPassword) => {
+  const user = await prisma.user.create({
     data: {
       name,
       email,
       card_id: cardId,
-      password: hashedPassword,  // Store the hashed password
+      password: hashedPassword,
     },
   });
-
-  return result;
+  return user;
 };
 
-// Get user by email for login
+// Find a user by email
 const getUserByEmail = async (email) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-    });
-    console.log("User found by email:", user); // Debugging line
-    return user;
-  } catch (error) {
-    console.log("Error finding user by email:", error); // Debugging line
-    return null;
-  }
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+  return user;
 };
 
-// Check if the cardId exists in card_id_dumps
-const isCardIdInDumps = async (cardId) => {
-  try {
-    const card = await prisma.card_id_dumps.findUnique({
-      where: { card_id: cardId },
-    });
-    console.log("Card found in dumps:", card); // Debugging line
-    return card !== null;
-  } catch (error) {
-    console.log("Error finding card in dumps:", error); // Debugging line
-    return false;
-  }
-};
-
-// Blacklist the token when logging out
+// Add a token to the blacklist
 const blacklistToken = async (token) => {
-  try {
-    console.log("Blacklisting token:", token);  // Log the token to ensure it's correct
+  const blacklisted = await prisma.blacklistedToken.create({
+    data: { token },
+  });
+  return blacklisted;
+};
 
-    const result = await prisma.lockedStatus.create({
-      data: {
-        status: "locked",
-        token: token,  // Ensure token is being passed properly
-      },
-    });
-
-    console.log("Token blacklisted successfully:", result);  // Log the result
-    return result;
-  } catch (error) {
-    console.error("Error blacklisting token:", error);  // Log the error
-    throw new Error("Error blacklisting token");
-  }
+// Check if a token is blacklisted
+const isTokenBlacklisted = async (token) => {
+  const blacklisted = await prisma.blacklistedToken.findUnique({
+    where: { token },
+  });
+  return !!blacklisted; // Returns true if token is blacklisted
 };
 
 module.exports = {
+  isCardIdAvailable,
   registerUser,
   getUserByEmail,
-  isCardIdInDumps,
   blacklistToken,
+  isTokenBlacklisted,
 };

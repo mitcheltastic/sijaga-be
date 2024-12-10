@@ -1,56 +1,74 @@
-const { registerUserService, loginUserService, logoutUserService } = require("../service/userAuthService");
+const {
+  registerUserService,
+  loginUserService,
+  logoutUserService,
+} = require("../service/userAuthService");
 
+// Register user
 const registerUserController = async (req, res) => {
-  const { name, email, cardId, password } = req.body;
+  const { name, email, card_id, password } = req.body;
+
+  if (!card_id) {
+    return res.status(400).json({
+      success: false,
+      message: "Card ID is required.",
+    });
+  }
+
   try {
-    const user = await registerUserService(name, email, cardId, password);
-    res.status(200).json({
-      status: true,
+    const user = await registerUserService(name, email, card_id, password);
+    res.status(201).json({
+      success: true,
       message: "User registered successfully.",
-      payload: { id: user.id, name: user.name, email: user.email, card_id: user.card_id },
+      user,
     });
   } catch (error) {
-    res.status(400).json({ status: false, message: error.message });
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
+
+// Login user
 const loginUserController = async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const result = await loginUserService(email, password);
     res.status(200).json({
-      status: true,
-      message: result.message,
-      token: result.token,
+      success: true,
+      ...result,
     });
   } catch (error) {
-    res.status(400).json({ status: false, message: error.message });
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
-// Controller code for logging out
+// Logout user
 const logoutUserController = async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];  // Extract token from Bearer header
-
-  if (!token) {
-    return res.status(400).json({
-      success: false,
-      message: "Token is required for logout.",
-    });
-  }
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
   try {
-    // Call the service to handle token blacklisting
-    const response = await logoutUserService(token);
-    return res.status(200).json(response);
+    await logoutUserService(token);
+    res.status(200).json({
+      success: true,
+      message: "Logout successful.",
+    });
   } catch (error) {
-    console.error("Error during logout:", error);
-    return res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: error.message || "An error occurred during logout.",
+      message: error.message,
     });
   }
 };
 
-
-module.exports = { registerUserController, loginUserController, logoutUserController };
+module.exports = {
+  registerUserController,
+  loginUserController,
+  logoutUserController,
+};

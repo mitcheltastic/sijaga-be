@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const userRepository = require("../repository/userRepository");
 
 const changePassword = async (id, oldPassword, newPassword) => {
@@ -12,15 +13,14 @@ const changePassword = async (id, oldPassword, newPassword) => {
   return await userRepository.updateUserById(id, { password: hashedPassword });
 };
 
-const resetPassword = async (email, newPassword) => {
-  const user = await userRepository.getUserByEmail(email);
-  if (!user) throw new Error("User not found");
+const resetPassword = async (email, password, confirmPassword) => {
+  if (password !== confirmPassword) throw new Error("Passwords do not match");
 
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  return await userRepository.updateUserById(user.id, { password: hashedPassword });
+  const hashedPassword = await bcrypt.hash(password, 10);
+  return await userRepository.updateUserByEmail(email, { password: hashedPassword });
 };
 
-const whoami = async (id) => {
+const whoamiService = async (id) => {
   const user = await userRepository.getUserById(id);
   if (!user) throw new Error("User not found");
 
@@ -28,8 +28,13 @@ const whoami = async (id) => {
   return user;
 };
 
+const blacklistToken = async (token) => {
+  return await userRepository.blacklistToken(token);
+};
+
 module.exports = {
   changePassword,
   resetPassword,
-  whoami,
+  whoamiService,
+  blacklistToken,
 };

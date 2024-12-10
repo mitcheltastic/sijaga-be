@@ -1,16 +1,22 @@
-const { registerUser, getUserByEmail, isCardIdInDumps, blacklistToken } = require("../repository/userAuthRepository");
+const {
+  isCardIdAvailable,
+  registerUser,
+  getUserByEmail,
+  blacklistToken,
+  isTokenBlacklisted,
+} = require("../repository/userAuthRepository");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// Register user
+// Register a new user
 const registerUserService = async (name, email, cardId, password) => {
-  // Check if the cardId exists in card_id_dumps
-  const isCardInDumps = await isCardIdInDumps(cardId);
-  if (isCardInDumps) {
-    throw new Error("Card ID is already in the dumps.");
+  const cardAvailable = await isCardIdAvailable(cardId);
+  if (!cardAvailable) {
+    throw new Error("The card ID is not available in the database.");
   }
 
-  const user = await registerUser(name, email, cardId, password);
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await registerUser(name, email, cardId, hashedPassword);
   return user;
 };
 
@@ -18,40 +24,46 @@ const registerUserService = async (name, email, cardId, password) => {
 const loginUserService = async (email, password) => {
   const user = await getUserByEmail(email);
   if (!user) {
-    throw new Error("User not found.");
+      throw new Error("Invalid email or password.");
   }
 
   // Compare the entered password with the stored hashed password
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
-    throw new Error("Invalid password.");
+      throw new Error("Invalid email or password.");
   }
 
   // Create JWT token
   const payload = { id: user.id, name: user.name, email: user.email, card_id: user.card_id };
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-  return { message: "Login successful", token };
+  // Return user details first, then token
+  return {
+      success: true,
+      message: "Login successful",
+      user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          cardId: user.card_id
+      },
+      token: token
+  };
 };
 
 // Logout user
 const logoutUserService = async (token) => {
-  console.log("Attempting to log out with token:", token);  // Log the token being passed
-
-  try {
-    const result = await blacklistToken(token);  // Call blacklistToken to handle the process
-    console.log("Token blacklisted successfully:", result);  // Log successful result
-
-    return {
-      success: true,
-      message: "Logout successful.",
-    };
-  } catch (error) {
-    console.error("Error during logout:", error.message);  // Log the actual error message
-    throw new Error("Error during logout process.");
+  const tokenBlacklisted = await isTokenBlacklisted(token);
+  if (tokenBlacklisted) {
+    throw new Error("Token is already blacklisted.");
   }
+
+  await blacklistToken(token);
+  return { success: true, message: "Logout successful." };
 };
 
-
-
-module.exports = { registerUserService, loginUserService, logoutUserService };
+module.exports = {
+  registerUserService,
+  loginUserService,
+  logoutUserService,
+};

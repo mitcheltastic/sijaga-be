@@ -2,58 +2,37 @@ const userService = require("../service/userService");
 
 const changePasswordController = async (req, res) => {
   try {
+    const { id } = req.user;
     const { oldPassword, newPassword } = req.body;
-    const userId = req.user.id; // Assuming authentication middleware sets req.user
 
-    const updatedUser = await userService.changePassword(userId, oldPassword, newPassword);
-    res.status(200).json({
-      status: true,
-      message: "Password successfully updated",
-      data: updatedUser,
-    });
+    const updatedUser = await userService.changePassword(id, oldPassword, newPassword);
+    res.status(200).json({ message: "Password updated successfully", data: updatedUser });
   } catch (error) {
-    res.status(400).json({
-      status: false,
-      message: error.message,
-    });
+    res.status(400).json({ message: error.message });
   }
 };
 
-const resetPasswordController = async (req, res) => {
+const logoutController = async (req, res) => {
   try {
-    const { email, newPassword } = req.body;
-
-    await userService.resetPassword(email, newPassword);
-    res.status(200).json({
-      status: true,
-      message: "Password successfully reset",
-    });
+    const { token } = req.headers.authorization.split(" ")[1];
+    await userService.blacklistToken(token);
+    res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    res.status(400).json({
-      status: false,
-      message: error.message,
-    });
+    res.status(400).json({ message: error.message });
   }
 };
 
 const whoamiController = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await userService.whoami(userId);
-    res.status(200).json({
-      status: true,
-      data: user,
-    });
+    const user = await userService.whoamiService(req.user.id);
+    res.status(200).json({ data: user });
   } catch (error) {
-    res.status(401).json({
-      status: false,
-      message: error.message,
-    });
+    res.status(400).json({ message: error.message });
   }
 };
 
 module.exports = {
   changePasswordController,
-  resetPasswordController,
+  logoutController,
   whoamiController,
 };
