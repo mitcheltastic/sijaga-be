@@ -41,3 +41,11 @@ model BlacklistedToken {
 
   @@map("blacklisted_tokens") // Table for blacklisted tokens
 }
+
+model LockedStatus {
+  id        Int      @id @default(autoincrement())
+  status    String
+  Timestamp DateTime @default(now())
+
+  @@map("locked_status") // The table name in the DB will be "locked_status"
+}
