@@ -9,16 +9,29 @@ const getUserById = async (userId) => {
 };
 
 // Update user profile
-const updateUserProfile = async (userId, name, email, cardId) => {
-  return await prisma.user.update({
-    where: { id: userId },
-    data: {
-      name,
-      email,
-      card_id: cardId,
-    },
-  });
+const updateUserProfile = async (userId, name, email, card_id) => {
+  try {
+    console.log("Updating user with values:", { userId, name, email, card_id });
+
+    // Perform the update query
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        name: name,        // Update name field
+        email: email,      // Update email field
+        card_id: card_id   // Update card_id field
+      }
+    });
+
+    return updatedUser;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw new Error(`Error updating user: ${error.message}`);
+  }
 };
+
 
 // Change user password
 const changeUserPassword = async (userId, newPassword) => {

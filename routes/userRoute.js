@@ -14,9 +14,9 @@ router.get("/whoami", whoamiController);
 router.get("/:id", getUserDetailsController);
 
 // Route to update user profile
-router.put("/profile", updateUserProfileController);
+router.put("/update", updateUserProfileController);
 
 // Route to change user password
-router.put("/password", changePasswordController);
+router.put("/changepassword", changePasswordController);
 
 module.exports = router;

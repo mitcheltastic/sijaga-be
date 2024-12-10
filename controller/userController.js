@@ -41,9 +41,11 @@ const getUserDetailsController = async (req, res) => {
 // Update user profile
 const updateUserProfileController = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { name, email, cardId } = req.body;
-    const updatedUser = await updateUserProfileService(userId, { name, email, cardId });
+    const userId = req.user.id; // Assuming userId comes from the authenticated user
+    const { name, email, cardId } = req.body; // Destructuring from the request body
+    
+    // Pass individual parameters to the service function
+    const updatedUser = await updateUserProfileService(userId, name, email, cardId);
     
     return res.json({
       success: true,
