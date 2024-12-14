@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { io } = require("../app"); // Assuming io is initialized in app.js
+const { getIO } = require("../socket"); // Import the Socket.IO instance getter
 
 // Get all users
 const getAllUsers = async () => {
@@ -24,6 +24,7 @@ const addUsageHistory = async (card_id, status) => {
   });
 
   // Emit real-time event for usage history
+  const io = getIO();
   io.emit("usageHistory_update", usageHistory);
 
   return usageHistory;
@@ -67,6 +68,7 @@ const createLockedStatus = async (status) => {
   });
 
   // Emit real-time event for locked status
+  const io = getIO();
   io.emit("lockedStatus_update", newStatus);
 
   return newStatus;
@@ -89,5 +91,5 @@ module.exports = {
   getTop3NamesFromUsageHistory,
   getTop3TimestampsFromUsageHistory,
   createLockedStatus,
-  getLatestLockedStatus
+  getLatestLockedStatus,
 };
