@@ -53,6 +53,10 @@ app.use("/card-id",sendIdCardRoutes);
 app.use("/user-ess",userNeeds);
 app.use("/history", usageHistory);
 
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
+
 // 404 Error Handling
 app.use((req, res) => {
   res.status(404).json({
