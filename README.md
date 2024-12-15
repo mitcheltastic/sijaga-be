@@ -4,6 +4,10 @@ This is the API for "SiJaga" that manages user authentication, card ID operation
 
 ---
 
+### Base URL
+- **Production URL**: [https://sijaga-be.vercel.app](https://sijaga-be.vercel.app)
+
+
 ## 🚀 Features
 
 - **User Management**: Register, login, logout, and profile updates.
