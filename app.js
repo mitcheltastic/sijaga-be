@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 require("dotenv").config();
-const { initSocket } = require("./socket");
+
 
 // Initialize background jobs
 require("./jobs/lockedStatusCleanup");
@@ -17,7 +17,7 @@ const app = express();
 
 const corsOptions = {
   origin: [
-    "http://localhost:3000",
+    "http://localhost:3000"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   credentials: true,
