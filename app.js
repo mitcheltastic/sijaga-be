@@ -15,8 +15,18 @@ const usageHistory = require("./routes/usageHistoryRoutes");
 
 const app = express();
 
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight OPTIONS requests
+
 // Middleware
-app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(bodyParser.json()); // Parse JSON requests
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded data
 
