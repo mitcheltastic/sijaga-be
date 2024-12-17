@@ -3,7 +3,6 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
-
 // Initialize background jobs
 require("./jobs/lockedStatusCleanup");
 
