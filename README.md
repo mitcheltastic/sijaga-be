@@ -50,6 +50,7 @@ This is the API for "SiJaga" that manages user authentication, card ID operation
 | GET    | `/history/top3/names`       | Retrieve the top 3 names          |
 | GET    | `/history/top3/timestamps`  | Retrieve the top 3 timestamps     |
 | POST   | `/history/box-status`       | Update or manage box status       |
+| GET    | `/history/latest-box-status`| Retrieve the latest box status    |
 
 ---
 
