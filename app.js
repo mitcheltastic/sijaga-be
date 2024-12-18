@@ -1,7 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const http = require("http"); // Required to create an HTTP server
 require("dotenv").config();
+
+const { initSocket } = require("./socket"); // Import Socket.IO initializer
 
 // Initialize background jobs
 require("./jobs/lockedStatusCleanup");
@@ -12,12 +15,15 @@ const sendIdCardRoutes = require("./routes/sendCardIdRoute");
 const userNeeds = require("./routes/userRoute");
 const usageHistory = require("./routes/usageHistoryRoutes");
 
-const app = express();
+const app = express(); // Express app instance
+const server = http.createServer(app); // HTTP server instance
 
+// Initialize Socket.IO
+initSocket(server); // Pass the server instance to Socket.IO
+
+// CORS setup
 const corsOptions = {
-  origin: [
-    "http://localhost:3000"
-  ],
+  origin: ["http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -56,4 +62,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app; // Export app instance only
+module.exports = { app, server }; // Export both app and server
