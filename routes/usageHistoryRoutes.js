@@ -10,7 +10,11 @@ const {
   getLatestLockedStatusController,
 } = require("../controller/usageHistoryController");
 
+const { postTestSocket } = require("../controller/socketController");
+
 const router = express.Router();
+
+router.post("/test-socket", postTestSocket);
 
 router.get("/users", getAllUsersController); // Get all users
 router.post("/add", addUsageHistoryController); // Add new usage history
