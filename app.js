@@ -14,6 +14,7 @@ const userRoutes = require("./routes/userAuthRoute");
 const sendIdCardRoutes = require("./routes/sendCardIdRoute");
 const userNeeds = require("./routes/userRoute");
 const usageHistory = require("./routes/usageHistoryRoutes");
+const availabilityStatus = require("./routes/availabilityRoutes");
 
 const app = express(); // Express app instance
 const server = http.createServer(app); // HTTP server instance
@@ -40,6 +41,7 @@ app.use("/user", userRoutes);
 app.use("/card-id", sendIdCardRoutes);
 app.use("/user-ess", userNeeds);
 app.use("/history", usageHistory);
+app.use("/availability", availabilityStatus);
 
 app.get("/", (req, res) => {
   res.send("This is SiJaga API!");
