@@ -4,9 +4,10 @@ This is the API for "SiJaga" that manages user authentication, card ID operation
 
 ---
 
-### Base URL
+## Base URL
 - **Production URL**: [https://sijaga-be.vercel.app](https://sijaga-be.vercel.app)
 
+---
 
 ## 🚀 Features
 
@@ -14,6 +15,7 @@ This is the API for "SiJaga" that manages user authentication, card ID operation
 - **Card ID Management**: Add and retrieve card IDs.
 - **User ESS**: Extended functionalities like password change and user updates.
 - **History Tracking**: Maintain user activity, retrieve latest entries, and track history status.
+- **Availability Status**: Manage and retrieve real-time availability status.
 
 ---
 
@@ -26,11 +28,15 @@ This is the API for "SiJaga" that manages user authentication, card ID operation
 | POST   | `/user/login`         | User login                 |
 | POST   | `/user/logout`        | User logout                |
 
+---
+
 ### **Card ID Endpoints**
 | Method | Endpoint              | Description                |
 |--------|-----------------------|----------------------------|
 | POST   | `/card-id/create`     | Create a new card ID       |
 | GET    | `/card-id/latest`     | Retrieve the latest card ID|
+
+---
 
 ### **User ESS (Extended Self-Service)**
 | Method | Endpoint                 | Description                     |
@@ -39,6 +45,8 @@ This is the API for "SiJaga" that manages user authentication, card ID operation
 | POST   | `/user-ess/change-password` | Change the user's password   |
 | DELETE | `/user-ess/delete`       | Delete the user's account       |
 | PUT    | `/user-ess/update`       | Update user information         |
+
+---
 
 ### **History Endpoints**
 | Method | Endpoint                    | Description                       |
@@ -51,6 +59,14 @@ This is the API for "SiJaga" that manages user authentication, card ID operation
 | GET    | `/history/top3/timestamps`  | Retrieve the top 3 timestamps     |
 | POST   | `/history/box-status`       | Update or manage box status       |
 | GET    | `/history/latest-box-status`| Retrieve the latest box status    |
+
+---
+
+### **Availability Endpoints**
+| Method | Endpoint                    | Description                             |
+|--------|-----------------------------|-----------------------------------------|
+| POST   | `/availability/post`        | Add a new availability status          |
+| GET    | `/availability/get-latest`  | Retrieve the latest availability status|
 
 ---
 
