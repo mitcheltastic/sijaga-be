@@ -49,3 +49,11 @@ model LockedStatus {
 
   @@map("locked_status") // The table name in the DB will be "locked_status"
 }
+
+model Availability {
+  id        Int      @id @default(autoincrement())
+  status    String
+  Timestamp DateTime @default(now())
+
+  @@map("availability") // The table name in the DB will be "availability"
+}
