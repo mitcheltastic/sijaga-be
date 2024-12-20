@@ -1,26 +1,39 @@
-const availabilityService = require("../service/availabilityService");
+const { createAvailability, getLatestAvailability, emitAvailabilityUpdate } = require("../repository/availabilityRepository");
 
 const postAvailability = async (req, res) => {
   try {
     const { status } = req.body;
 
-    const availability = await availabilityService.addAvailability(status);
-    return res.status(201).json({
+    if (!status) {
+      return res.status(400).json({
+        status: false,
+        message: "Status is required",
+      });
+    }
+
+    // Create new availability using the repository function
+    const newAvailability = await createAvailability(status);
+
+    // Emit the real-time update via Socket.IO
+    emitAvailabilityUpdate(newAvailability);
+
+    res.status(201).json({
       status: true,
-      message: "Availability added successfully",
-      data: availability,
+      message: "Availability status created successfully",
+      data: newAvailability,
     });
   } catch (error) {
-    return res.status(400).json({
+    console.error(error);
+    res.status(500).json({
       status: false,
-      message: error.message,
+      message: "Internal server error",
     });
   }
 };
 
-const getLatestAvailability = async (req, res) => {
+const getAvailLatest = async (req, res) => {
   try {
-    const latestAvailability = await availabilityService.fetchLatestAvailability();
+    const latestAvailability = await getLatestAvailability(); // This is directly from the repository
     return res.status(200).json({
       status: true,
       message: "Latest availability fetched successfully",
@@ -36,5 +49,5 @@ const getLatestAvailability = async (req, res) => {
 
 module.exports = {
   postAvailability,
-  getLatestAvailability,
+  getAvailLatest, // No duplicates, directly using the imported function
 };

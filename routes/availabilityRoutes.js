@@ -6,6 +6,6 @@ const availabilityController = require("../controller/availabilityController");
 router.post("/post", availabilityController.postAvailability);
 
 // GET: Get the latest availability record
-router.get("/get-latest", availabilityController.getLatestAvailability);
+router.get("/get-latest", availabilityController.getAvailLatest);
 
 module.exports = router;

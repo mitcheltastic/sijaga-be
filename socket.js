@@ -14,6 +14,19 @@ const initSocket = (server) => {
   });
 
   console.log("Socket.IO initialized");
+
+  // Handle client connections
+  io.on("connection", (socket) => {
+    console.log(`Client connected: ${socket.id}`);
+
+    // Handle client disconnection
+    socket.on("disconnect", () => {
+      console.log(`Client disconnected: ${socket.id}`);
+    });
+
+    // Additional event listeners can be added here if needed
+  });
+
   return io;
 };
 
