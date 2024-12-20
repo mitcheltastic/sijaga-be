@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { getIO } = require("../socket");
 
 const createAvailability = async (status) => {
   return await prisma.availability.create({
@@ -17,7 +18,13 @@ const getLatestAvailability = async () => {
   });
 };
 
+const emitAvailabilityUpdate = (availability) => {
+  const io = getIO();
+  io.emit("availability_update", availability); // Broadcast the updated availability status
+};
+
 module.exports = {
   createAvailability,
   getLatestAvailability,
+  emitAvailabilityUpdate
 };
