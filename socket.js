@@ -10,9 +10,12 @@ const initSocket = (server) => {
   // Initialize Socket.IO with the provided server
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000", // Allow all origins for testing; customize this for production
-      methods: ["GET", "POST"], // Allow specific HTTP methods for better security
+      origin: [
+        "http://localhost:3000", // Local dummy frontend
+      ],
+      methods: ["GET", "POST"], // Allow specific HTTP methods
     },
+    transports: ["polling", "websocket"], // Allow both polling and WebSocket
   });
 
   console.log("Socket.IO initialized");
@@ -25,19 +28,23 @@ const initSocket = (server) => {
     socket.emit("message", "Welcome to the real-time server!");
 
     // Handle client disconnection
-    socket.on("disconnect", () => {
-      console.log(`Client disconnected: ${socket.id}`);
+    socket.on("disconnect", (reason) => {
+      console.log(`Client disconnected: ${socket.id}, reason: ${reason}`);
     });
 
-    // Additional event listeners can be added here
-    // Example: Listen for a custom event
+    // Custom event listeners
     socket.on("custom_event", (data) => {
       console.log(`Received custom_event from ${socket.id}:`, data);
-      // You can broadcast or emit events here
+      // Broadcast a response to all other clients
       socket.broadcast.emit("custom_event_response", {
         message: "This is a response from the server.",
         data,
       });
+    });
+
+    // Log any errors on the socket
+    socket.on("error", (err) => {
+      console.error(`Socket error from ${socket.id}:`, err);
     });
   });
 
