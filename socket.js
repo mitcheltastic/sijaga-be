@@ -16,6 +16,7 @@ const initSocket = (server) => {
       methods: ["GET", "POST"], // Allow specific HTTP methods
     },
     transports: ["polling", "websocket"], // Allow both polling and WebSocket
+    path: "/socket.io/", // Explicitly set the path
   });
 
   console.log("Socket.IO initialized");
