@@ -5,6 +5,27 @@
     ],
     "routes": [
       { "src": "/(.*)", "dest": "index.js" }
-    ]
-  }
+    ],
+    "rewrites": [
+    {
+      "source": "/socket.io",
+      "destination": "/"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/socket.io",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,POST,OPTIONS"
+        }
+      ]
+    }
+  ]
+}
   
