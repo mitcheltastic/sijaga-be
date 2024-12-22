@@ -7,9 +7,11 @@ let io; // Variable to hold the Socket.IO instance
  * @param {http.Server} server - The HTTP server
  */
 const initSocket = (server) => {
+  // Initialize Socket.IO with the provided server
   io = new Server(server, {
     cors: {
-      origin: "*", // Allow all origins for testing; customize as needed
+      origin: "*", // Allow all origins for testing; customize this for production
+      methods: ["GET", "POST"], // Allow specific HTTP methods for better security
     },
   });
 
@@ -19,12 +21,24 @@ const initSocket = (server) => {
   io.on("connection", (socket) => {
     console.log(`Client connected: ${socket.id}`);
 
+    // Send a welcome message to the connected client
+    socket.emit("message", "Welcome to the real-time server!");
+
     // Handle client disconnection
     socket.on("disconnect", () => {
       console.log(`Client disconnected: ${socket.id}`);
     });
 
-    // Additional event listeners can be added here if needed
+    // Additional event listeners can be added here
+    // Example: Listen for a custom event
+    socket.on("custom_event", (data) => {
+      console.log(`Received custom_event from ${socket.id}:`, data);
+      // You can broadcast or emit events here
+      socket.broadcast.emit("custom_event_response", {
+        message: "This is a response from the server.",
+        data,
+      });
+    });
   });
 
   return io;
