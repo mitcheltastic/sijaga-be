@@ -10,7 +10,7 @@ const initSocket = (server) => {
   // Initialize Socket.IO with the provided server
   io = new Server(server, {
     cors: {
-      origin: "*", // Allow all origins for testing; customize this for production
+      origin: "http://localhost:3000", // Allow all origins for testing; customize this for production
       methods: ["GET", "POST"], // Allow specific HTTP methods for better security
     },
   });
