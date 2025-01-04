@@ -15,8 +15,8 @@ const {
   };
   
   // Service to add usage history
-  const addUsageHistoryService = async (card_id, status) => {
-    return await addUsageHistory(card_id, status);
+  const addUsageHistoryService = async (card_id, status, doorStatus) => {
+    return await addUsageHistory(card_id, status, doorStatus);
   };
   
   // Service to get all usage history
