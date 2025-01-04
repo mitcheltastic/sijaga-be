@@ -23,6 +23,7 @@ model UsageHistory {
   name      String
   status    String
   card_id   String
+  doorStatus  String?  
 
   @@map("usage_history")  // The table name in the DB will be "usage_history"
 }
