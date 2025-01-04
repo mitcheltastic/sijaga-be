@@ -11,9 +11,11 @@ const initSocket = (server) => {
   io = new Server(server, {
     cors: {
       origin: [
-        "http://localhost:3000", // Local dummy frontend
+        "http://localhost:3000",  // Frontend origin
+        "http://127.0.0.1:3000",  // Alternative local frontend origin
       ],
-      methods: ["GET", "POST"], // Allow specific HTTP methods
+      methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Allow specific HTTP methods
+      credentials: true, // Allow credentials (cookies, headers)
     },
     transports: ["polling", "websocket"], // Allow both polling and WebSocket
   });
@@ -27,22 +29,22 @@ const initSocket = (server) => {
     // Send a welcome message to the connected client
     socket.emit("message", "Welcome to the real-time server!");
 
-    // Handle client disconnection
-    socket.on("disconnect", (reason) => {
-      console.log(`Client disconnected: ${socket.id}, reason: ${reason}`);
-    });
-
-    // Custom event listeners
+    // Handle custom events from the client
     socket.on("custom_event", (data) => {
       console.log(`Received custom_event from ${socket.id}:`, data);
-      // Broadcast a response to all other clients
+      // Broadcast the custom event response to all connected clients except the sender
       socket.broadcast.emit("custom_event_response", {
         message: "This is a response from the server.",
         data,
       });
     });
 
-    // Log any errors on the socket
+    // Handle client disconnection
+    socket.on("disconnect", (reason) => {
+      console.log(`Client disconnected: ${socket.id}, reason: ${reason}`);
+    });
+
+    // Log errors for debugging
     socket.on("error", (err) => {
       console.error(`Socket error from ${socket.id}:`, err);
     });
