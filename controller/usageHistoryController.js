@@ -26,16 +26,16 @@ const getAllUsersController = async (req, res) => {
 // Controller to add usage history (Real-Time)
 const addUsageHistoryController = async (req, res) => {
   try {
-    const { card_id, status, doorStatus } = req.body;
+    const { card_id, status, availStatus } = req.body;
 
-    if (!card_id || !status || !doorStatus) {
+    if (!card_id || !status || !availStatus) {
       return res.status(400).json({
         success: false,
-        message: "card_id, status, and doorStatus are required.",
+        message: "card_id, status, and availStatus are required.",
       });
     }
 
-    const usageHistory = await addUsageHistoryService(card_id, status, doorStatus);
+    const usageHistory = await addUsageHistoryService(card_id, status, availStatus);
 
     // Emit real-time event
     const io = getIO();

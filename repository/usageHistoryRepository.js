@@ -8,7 +8,7 @@ const getAllUsers = async () => {
 };
 
 // Add a new usage history entry
-const addUsageHistory = async (card_id, status, doorStatus) => {
+const addUsageHistory = async (card_id, status, availStatus) => {
   const user = await prisma.user.findUnique({ where: { card_id } });
   if (!user) {
     throw new Error("User with this card_id does not exist.");
@@ -20,7 +20,7 @@ const addUsageHistory = async (card_id, status, doorStatus) => {
       name: user.name,
       status: status,
       card_id: card_id,
-      doorStatus: doorStatus,
+      availtatus: availStatus,
     },
   });
 
